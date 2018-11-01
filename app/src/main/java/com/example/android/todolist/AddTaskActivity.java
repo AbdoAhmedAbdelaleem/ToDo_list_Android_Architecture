@@ -105,11 +105,24 @@ public class AddTaskActivity extends AppCompatActivity {
     public void onSaveButtonClicked() {
         // Not yet implemented
         String description = mEditText.getText().toString();
-        int priority = getPriorityFromViews();
+        final int priority = getPriorityFromViews();
         Date date = new Date();
-        TaskEntry entry = new TaskEntry(description, priority, date);
-        long id = mDB.getTaskDao().Insert(entry);
-        Toast.makeText(this, "Inserted with id "+id, Toast.LENGTH_SHORT).show();
+       final TaskEntry entry = new TaskEntry(description, priority, date);
+        AppExecuter.getsInstance().diskIO.execute(new Runnable() {
+            @Override
+            public void run() {
+               final long id = mDB.getTaskDao().Insert(entry);
+               AppExecuter.getsInstance().mainThread.execute(new Runnable() {
+                   @Override
+                   public void run() {
+                       Toast.makeText(AddTaskActivity.this, "Inserted with id "+id, Toast.LENGTH_SHORT).show();
+                   }
+               });
+
+
+            }
+        });
+
 
     }
 
