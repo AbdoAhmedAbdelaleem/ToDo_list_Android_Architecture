@@ -18,6 +18,8 @@ public interface TaskDao
 {
     @Query("SELECT * FROM TASKS ORDER BY priority")
     public List<TaskEntry> GetAllTaksQuery();
+    @Query("SELECT * FROM TASKS WHERe id=:id")
+    public TaskEntry GetTaskByID(int id);
     @Insert
     public long Insert(TaskEntry entry);
     @Update(onConflict = OnConflictStrategy.REPLACE)

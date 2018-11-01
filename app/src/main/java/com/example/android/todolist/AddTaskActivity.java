@@ -63,6 +63,22 @@ public class AddTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_task);
         mDB = AppDatabase.getsInstance(this);
         initViews();
+        Intent intent = getIntent();
+        if(intent!=null)
+        {
+            final int id = intent.getIntExtra(EXTRA_TASK_ID, -1);
+            if(id!=-1)
+            {
+                AppExecuter.getsInstance().diskIO.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskEntry entry = mDB.getTaskDao().GetTaskByID(id);
+                        populateUI(entry);
+                    }
+                });
+
+            }
+        }
     }
 
     @Override
