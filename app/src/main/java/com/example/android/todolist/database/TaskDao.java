@@ -19,7 +19,7 @@ public interface TaskDao
     @Query("SELECT * FROM TASKS ORDER BY priority")
     public Cursor GetAllTaksQuery();
     @Insert
-    public void Insert(TaskEntry entry);
+    public long Insert(TaskEntry entry);
     @Update(onConflict = OnConflictStrategy.REPLACE)
     public void Update(TaskEntry taskEntry);
     @Delete

@@ -22,11 +22,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.example.android.todolist.database.AppDatabase;
 import com.example.android.todolist.database.TaskEntry;
@@ -59,7 +61,7 @@ public class AddTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
-
+        mDB = AppDatabase.getsInstance(this);
         initViews();
     }
 
@@ -93,7 +95,7 @@ public class AddTaskActivity extends AppCompatActivity {
     private void populateUI(TaskEntry task) {
         mEditText.setText(task.getDescription());
         setPriorityInViews(task.getPriority());
-        Log.i(TAG, "populateUI: load data with id "+task.getId());
+        Log.i(TAG, "populateUI: load data with id " + task.getId());
     }
 
     /**
@@ -102,6 +104,12 @@ public class AddTaskActivity extends AppCompatActivity {
      */
     public void onSaveButtonClicked() {
         // Not yet implemented
+        String description = mEditText.getText().toString();
+        int priority = getPriorityFromViews();
+        Date date = new Date();
+        TaskEntry entry = new TaskEntry(description, priority, date);
+        long id = mDB.getTaskDao().Insert(entry);
+        Toast.makeText(this, "Inserted with id "+id, Toast.LENGTH_SHORT).show();
 
     }
 

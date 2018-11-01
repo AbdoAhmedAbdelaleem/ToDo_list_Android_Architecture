@@ -20,7 +20,7 @@ public abstract class AppDatabase extends RoomDatabase
             return sInstance;
         synchronized (lock)
         {
-            sInstance=Room.databaseBuilder(context,AppDatabase.class,DATABASE_NAME).build();
+            sInstance=Room.databaseBuilder(context,AppDatabase.class,DATABASE_NAME).allowMainThreadQueries().build();
             return sInstance;
         }
     }
