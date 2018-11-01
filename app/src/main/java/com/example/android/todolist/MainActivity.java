@@ -80,11 +80,17 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
             // Called when a user swipes left or right on a ViewHolder
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                // Here is where you'll implement swipe to delete
-                List<TaskEntry> taskEntries = mAdapter.getmTaskEntries();
-                int position = viewHolder.getAdapterPosition();
-                mdb.getTaskDao().Delete(taskEntries.get(position));
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            AppExecuter.getsInstance().diskIO.execute(new Runnable() {
+                @Override
+                public void run() {
+                    List<TaskEntry> taskEntries = mAdapter.getmTaskEntries();
+                    int position = viewHolder.getAdapterPosition();
+                    mdb.getTaskDao().Delete(taskEntries.get(position));
+                    RetreivesTaskts();
+                }
+            });
+
             }
         }).attachToRecyclerView(mRecyclerView);
 
@@ -121,5 +127,18 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     }
     public void RetreivesTaskts()
     {
+        AppExecuter.getsInstance().diskIO.execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<TaskEntry> taskEntries = mdb.getTaskDao().GetAllTaksQuery();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.setTasks(taskEntries);
+
+                    }
+                });
+            }
+        });
     }
 }

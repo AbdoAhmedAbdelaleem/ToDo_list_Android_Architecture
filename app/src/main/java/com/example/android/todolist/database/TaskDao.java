@@ -17,7 +17,7 @@ import java.util.List;
 public interface TaskDao
 {
     @Query("SELECT * FROM TASKS ORDER BY priority")
-    public Cursor GetAllTaksQuery();
+    public List<TaskEntry> GetAllTaksQuery();
     @Insert
     public long Insert(TaskEntry entry);
     @Update(onConflict = OnConflictStrategy.REPLACE)
