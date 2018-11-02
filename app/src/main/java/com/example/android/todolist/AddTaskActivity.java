@@ -64,11 +64,10 @@ public class AddTaskActivity extends AppCompatActivity {
         mDB = AppDatabase.getsInstance(this);
         initViews();
         Intent intent = getIntent();
-        if(intent!=null)
-        {
+        if (intent != null) {
             final int id = intent.getIntExtra(EXTRA_TASK_ID, -1);
-            if(id!=-1)
-            {
+            mTaskId = id;
+            if (id != -1) {
                 AppExecuter.getsInstance().diskIO.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -78,6 +77,9 @@ public class AddTaskActivity extends AppCompatActivity {
                 });
 
             }
+        } else {
+            mButton.setText("Add");
+
         }
     }
 
@@ -112,6 +114,7 @@ public class AddTaskActivity extends AppCompatActivity {
         mEditText.setText(task.getDescription());
         setPriorityInViews(task.getPriority());
         Log.i(TAG, "populateUI: load data with id " + task.getId());
+        mButton.setText("Update");
     }
 
     /**
@@ -119,26 +122,24 @@ public class AddTaskActivity extends AppCompatActivity {
      * It retrieves user input and inserts that new task data into the underlying database.
      */
     public void onSaveButtonClicked() {
-        // Not yet implemented
+
         String description = mEditText.getText().toString();
         final int priority = getPriorityFromViews();
         Date date = new Date();
-       final TaskEntry entry = new TaskEntry(description, priority, date);
+        final TaskEntry entry = new TaskEntry(description, priority, date);
         AppExecuter.getsInstance().diskIO.execute(new Runnable() {
             @Override
             public void run() {
-               final long id = mDB.getTaskDao().Insert(entry);
-               AppExecuter.getsInstance().mainThread.execute(new Runnable() {
-                   @Override
-                   public void run() {
-                       Toast.makeText(AddTaskActivity.this, "Inserted with id "+id, Toast.LENGTH_SHORT).show();
-                   }
-               });
-
+                if (mTaskId == -1) {
+                    final long id = mDB.getTaskDao().Insert(entry);
+                } else {
+                    entry.setId(mTaskId);
+                    mDB.getTaskDao().Update(entry);
+                }
 
             }
         });
-
+        finish();
 
     }
 
