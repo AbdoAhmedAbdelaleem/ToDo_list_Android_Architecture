@@ -17,7 +17,7 @@ import java.util.List;
 public interface TaskDao
 {
     @Query("SELECT * FROM TASKS ORDER BY priority")
-    public List<TaskEntry> GetAllTaksQuery();
+    public LiveData<List<TaskEntry>> GetAllTaksQuery();
     @Query("SELECT * FROM TASKS WHERe id=:id")
     public TaskEntry GetTaskByID(int id);
     @Insert

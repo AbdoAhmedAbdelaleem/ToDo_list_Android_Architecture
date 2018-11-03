@@ -72,6 +72,8 @@ public class AddTaskActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         TaskEntry entry = mDB.getTaskDao().GetTaskByID(id);
+                        Log.i(TAG, "onChanged: Data Updated");
+
                         populateUI(entry);
                     }
                 });
@@ -135,6 +137,7 @@ public class AddTaskActivity extends AppCompatActivity {
                 } else {
                     entry.setId(mTaskId);
                     mDB.getTaskDao().Update(entry);
+
                 }
 
             }

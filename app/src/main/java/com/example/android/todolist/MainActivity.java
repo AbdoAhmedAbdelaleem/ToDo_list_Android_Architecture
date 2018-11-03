@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2016 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.example.android.todolist;
 
@@ -48,11 +48,12 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
     private AppDatabase mdb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mdb=AppDatabase.getsInstance(this);
+        mdb = AppDatabase.getsInstance(this);
         // Set the RecyclerView to its corresponding view
         mRecyclerView = findViewById(R.id.recyclerViewTasks);
 
@@ -81,15 +82,15 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             // Called when a user swipes left or right on a ViewHolder
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
-            AppExecuter.getsInstance().diskIO.execute(new Runnable() {
-                @Override
-                public void run() {
-                    List<TaskEntry> taskEntries = mAdapter.getmTaskEntries();
-                    int position = viewHolder.getAdapterPosition();
-                    mdb.getTaskDao().Delete(taskEntries.get(position));
-                    RetreivesTaskts();
-                }
-            });
+                AppExecuter.getsInstance().diskIO.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<TaskEntry> taskEntries = mAdapter.getmTaskEntries();
+                        int position = viewHolder.getAdapterPosition();
+                        mdb.getTaskDao().Delete(taskEntries.get(position));
+                        RetreivesTaskts();
+                    }
+                });
 
             }
         }).attachToRecyclerView(mRecyclerView);
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     public void onItemClickListener(int itemId) {
         // Launch AddTaskActivity adding the itemId as an extra in the intent
         Intent updateTaskIntent = new Intent(MainActivity.this, AddTaskActivity.class);
-        updateTaskIntent.putExtra(AddTaskActivity.EXTRA_TASK_ID,itemId);
+        updateTaskIntent.putExtra(AddTaskActivity.EXTRA_TASK_ID, itemId);
         startActivity(updateTaskIntent);
     }
 
@@ -125,20 +126,16 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     protected void onResume() {
         super.onResume();
     }
-    public void RetreivesTaskts()
-    {
-        AppExecuter.getsInstance().diskIO.execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<TaskEntry> taskEntries = mdb.getTaskDao().GetAllTaksQuery();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setTasks(taskEntries);
 
-                    }
-                });
+    public void RetreivesTaskts() {
+        final LiveData<List<TaskEntry>> tasks = mdb.getTaskDao().GetAllTaksQuery();
+        tasks.observe(this, new Observer<List<TaskEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<TaskEntry> taskEntries) {
+                mAdapter.setTasks(taskEntries);
+                Log.i(TAG, "onChanged: Data Updated");
             }
         });
+
     }
 }
