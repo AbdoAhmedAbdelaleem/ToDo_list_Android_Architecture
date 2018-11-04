@@ -68,15 +68,16 @@ public class AddTaskActivity extends AppCompatActivity {
             final int id = intent.getIntExtra(EXTRA_TASK_ID, -1);
             mTaskId = id;
             if (id != -1) {
-                AppExecuter.getsInstance().diskIO.execute(new Runnable() {
+                AddTaskViewModelFactory factory=new AddTaskViewModelFactory(mDB,mTaskId);
+                AddTaskViewModel addTaskViewModel = ViewModelProviders.of(this, factory).get(AddTaskViewModel.class);
+                addTaskViewModel.getTaskEntryLiveData().observe(this, new Observer<TaskEntry>() {
                     @Override
-                    public void run() {
-                        TaskEntry entry = mDB.getTaskDao().GetTaskByID(id);
+                    public void onChanged(@Nullable TaskEntry entry) {
                         Log.i(TAG, "onChanged: Data Updated");
-
                         populateUI(entry);
                     }
                 });
+
 
             }
         } else {

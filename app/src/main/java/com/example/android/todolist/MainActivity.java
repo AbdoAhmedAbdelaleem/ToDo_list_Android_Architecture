@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                         List<TaskEntry> taskEntries = mAdapter.getmTaskEntries();
                         int position = viewHolder.getAdapterPosition();
                         mdb.getTaskDao().Delete(taskEntries.get(position));
-                        RetreivesTaskts();
                     }
                 });
 
@@ -128,8 +127,9 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     }
 
     public void RetreivesTaskts() {
-        final LiveData<List<TaskEntry>> tasks = mdb.getTaskDao().GetAllTaksQuery();
-        tasks.observe(this, new Observer<List<TaskEntry>>() {
+        MainViewModel mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        mainViewModel.getTasks().observe(this, new Observer<List<TaskEntry>>() {
             @Override
             public void onChanged(@Nullable List<TaskEntry> taskEntries) {
                 mAdapter.setTasks(taskEntries);
